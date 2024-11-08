@@ -1,7 +1,7 @@
 apiVersion: sqs.aws.upbound.io/v1beta1
 kind: Queue
 metadata:
-  name: first-queue1
+  name: first-cd-queue1
 spec:
   forProvider:
     region: us-east-1
