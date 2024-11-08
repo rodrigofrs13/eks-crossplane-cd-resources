@@ -1,13 +1,13 @@
-# apiVersion: sqs.aws.upbound.io/v1beta1
-# kind: Queue
-# metadata:
-#   name: first-queue2
-# spec:
-#   forProvider:
-#     region: us-east-1
-#   providerConfigRef:
-#     name: irsa-providerconfig
-
+apiVersion: sqs.aws.upbound.io/v1beta1
+kind: Queue
+metadata:
+  name: first-queue-cd-argo-2
+spec:
+  forProvider:
+    name: first-queue-cd-argo-2
+    region: us-east-1
+  providerConfigRef:
+    name: irsa-providerconfig
 
 # ---
 
