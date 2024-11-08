@@ -20,5 +20,6 @@ metadata:
 spec:
   forProvider:
     region: us-east-1
+    name: crossplane-queue-cd-argo-21
   providerConfigRef:
     name: irsa-providerconfig
