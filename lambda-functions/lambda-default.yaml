@@ -1,0 +1,23 @@
+# apiVersion: lambda.aws.upbound.io/v1beta1
+# kind: Function
+# metadata:
+#   annotations:
+#     meta.upbound.io/example-id: lambda/v1beta1/function
+#     uptest.upbound.io/timeout: "3600"
+#   labels:
+#     testing.upbound.io/example-name: lambda-default
+#   name: lambda-default
+# spec:
+#   forProvider:
+#     environment:
+#     - variables:
+#         foo: bar
+#     s3Bucket: teste-crossplane34566
+#     s3Key: index.zip
+#     handler: lambda_function.lambda_handler
+#     region: us-east-1
+#     runtime: python3.8
+#     timeout: 60
+#     role: arn:aws:iam::246732148991:role/service-role/teste-role-itxmvmtq  #Obrigatório ter a role já criada.
+#   providerConfigRef:
+#     name: irsa-providerconfig    

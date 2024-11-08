@@ -1,0 +1,11 @@
+apiVersion: s3.aws.upbound.io/v1beta1
+kind: Bucket
+metadata:
+  annotations:
+  name: bucket-goiania
+spec:
+  forProvider:
+    region: us-east-1
+#    versioning: true
+  providerConfigRef:
+    name: irsa-providerconfig

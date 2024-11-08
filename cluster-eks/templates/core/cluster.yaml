@@ -1,0 +1,57 @@
+{{- if .Values.cluster }}
+apiVersion: eks.aws.upbound.io/v1beta1
+kind: Cluster
+metadata:
+  name: {{ .Values.global.name }}
+  labels:
+    testing.upbound.io/cluster: {{ .Values.global.name }}
+  
+
+spec:
+  providerConfigRef:
+    name: {{ .Values.global.providerConfigRef | default "irsa-providerconfig" }}
+
+  forProvider:
+    bootstrapSelfManagedAddons: true  
+    
+    region: {{ .Values.global.region | default "us-east-1" }}
+    version: {{ .Values.global.version | quote }}
+    roleArn: {{ .Values.cluster.roleArn }}
+    accessConfig:
+          - authenticationMode: {{ .Values.cluster.accessConfig.authenticationMode }}
+            bootstrapClusterCreatorAdminPermissions: {{ .Values.cluster.accessConfig.bootstrapClusterCreatorAdminPermissions }}    
+    vpcConfig:     
+      - subnetIds:
+          {{- range .Values.cluster.vpcConfig.subnetIds }}
+          - {{ . | quote }}
+          {{- end }}
+        {{- if .Values.cluster.vpcConfig.securityGroupIds }}
+        securityGroupIds:
+          {{- range .Values.cluster.vpcConfig.securityGroupIds }}
+          - {{ . | quote }}
+          {{- end }}
+        {{- end }}
+        publicAccessCidrs:
+            {{- range .Values.cluster.vpcConfig.publicAccessCidrs }}
+            - {{ . | quote }}
+            {{- end }}     
+        endpointPrivateAccess: {{ .Values.cluster.vpcConfig.endpointPrivateAccess }}
+        endpointPublicAccess: {{ .Values.cluster.vpcConfig.endpointPublicAccess }}           
+    {{- if .Values.cluster.kubernetesNetworkConfig }}
+    kubernetesNetworkConfig:
+      - ipFamily: {{ .Values.cluster.kubernetesNetworkConfig.ipFamily }}
+        serviceIpv4Cidr: {{ .Values.cluster.kubernetesNetworkConfig.serviceIpv4Cidr }}
+    {{- end }}
+    
+    {{- if .Values.cluster.enabledClusterLogTypes }}
+    enabledClusterLogTypes:
+      {{- toYaml .Values.cluster.enabledClusterLogTypes | nindent 6 }}
+    {{- end }}
+    
+    {{- if .Values.cluster.tags }}
+    tags:
+      {{- toYaml .Values.cluster.tags | nindent 6 }}
+    {{- end }}
+
+{{- end }}
+

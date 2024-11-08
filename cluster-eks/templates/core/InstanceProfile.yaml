@@ -1,0 +1,10 @@
+# # Instance Profile
+# apiVersion: iam.aws.upbound.io/v1beta1
+# kind: InstanceProfile
+# metadata:
+#   name: {{ .Values.nodeGroup.name }}-instance-profile
+# spec:
+#   forProvider:
+#     role: "arn:aws:iam::905418268696:role/control-plane-admin"
+#   providerConfigRef:
+#     name: {{ $.Values.global.providerConfigRef }}

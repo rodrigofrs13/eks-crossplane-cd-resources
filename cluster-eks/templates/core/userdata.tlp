@@ -1,0 +1,49 @@
+{{- define "eks.userdata" -}}
+#!/bin/bash
+set -o xtrace
+
+# Função para obter token de instância
+get_instance_auth_token() {
+    curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"
+}
+
+# Obter token de instância
+TOKEN=$(get_instance_auth_token)
+
+# Obter região da instância
+REGION=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/placement/region)
+
+# Obter ID da instância
+INSTANCE_ID=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/instance-id)
+
+# Obter nome do cluster a partir das tags da instância
+CLUSTER_NAME=$(aws ec2 describe-tags --filters "Name=resource-id,Values=$INSTANCE_ID" "Name=key,Values=eks:cluster-name" --region $REGION --query 'Tags[0].Value' --output text)
+
+# Obter informações do cluster
+CLUSTER_INFO=$(aws eks describe-cluster --name $CLUSTER_NAME --region $REGION)
+
+# Extrair endpoint e certificado CA do cluster
+API_SERVER_URL=$(echo $CLUSTER_INFO | jq -r '.cluster.endpoint')
+B64_CLUSTER_CA=$(echo $CLUSTER_INFO | jq -r '.cluster.certificateAuthority.data')
+
+# Determinar o tipo de capacidade (ON_DEMAND ou SPOT)
+CAPACITY_TYPE=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --region $REGION --query 'Reservations[0].Instances[0].InstanceLifecycle' --output text)
+if [ "$CAPACITY_TYPE" == "spot" ]; then
+    CAPACITY_TYPE="SPOT"
+else
+    CAPACITY_TYPE="ON_DEMAND"
+fi
+
+# Obter AMI ID
+AMI_ID=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/ami-id)
+
+# Executar o script de bootstrap do EKS
+/etc/eks/bootstrap.sh $CLUSTER_NAME \
+    --b64-cluster-ca $B64_CLUSTER_CA \
+    --apiserver-endpoint $API_SERVER_URL \
+    --dns-cluster-ip 10.100.0.10 \
+    --kubelet-extra-args "--node-labels=eks.amazonaws.com/nodegroup-image=$AMI_ID,eks.amazonaws.com/capacityType=$CAPACITY_TYPE" \
+    --use-max-pods false
+
+
+{{- end -}}

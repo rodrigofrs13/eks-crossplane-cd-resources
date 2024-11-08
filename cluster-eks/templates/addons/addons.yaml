@@ -1,0 +1,36 @@
+{{- if .Values.addons }}
+{{- range $addon := .Values.addons }}
+---
+apiVersion: eks.aws.upbound.io/v1beta1
+kind: Addon
+metadata:
+  name: {{ $.Values.global.name }}-{{ $addon.name }}
+spec:
+  providerConfigRef:
+    name: {{ $.Values.global.providerConfigRef }}   
+  forProvider:
+    region: {{ $.Values.global.region }}
+    clusterName: {{ $.Values.global.name }}
+    addonName: {{ $addon.name }}
+    {{- if $addon.version }}
+    addonVersion: {{ $addon.version | quote }}
+    {{- end }}
+    {{- if $addon.resolveConflicts }}
+    resolveConflicts: {{ $addon.resolveConflicts }}
+    {{- end }}
+    {{- if $addon.serviceAccountRoleArn }}
+    serviceAccountRoleArn: {{ $addon.serviceAccountRoleArn }}
+    {{- end }}
+    {{- if $addon.preserveOnDelete }}
+    preserveOnDelete: {{ $addon.preserveOnDelete }}
+    {{- end }}
+    {{- if $addon.configurationValues }}
+    configurationValues: |
+      {{- tpl $addon.configurationValues $ | nindent 6 }}
+    {{- end }}
+    {{- if $addon.tags }}
+    tags:
+      {{- toYaml $addon.tags | nindent 6 }}
+    {{- end }}
+{{- end }}
+{{- end }}

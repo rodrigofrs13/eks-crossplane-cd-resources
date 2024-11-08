@@ -1,0 +1,150 @@
+global:
+  region: us-east-1
+  version: "1.29"
+  name: crossplane-cluster
+  providerConfigRef: "irsa-providerconfig"
+  providerConfigRefsecret: "irsa-providerconfig-gft" # mesmo do providerconfig.name 
+
+
+#### Cluster
+
+cluster: 
+  roleArn: "arn:aws:iam::905418268696:role/control-plane-admin"
+  vpcConfig:
+    endpointPrivateAccess: true
+    endpointPublicAccess: true
+    publicAccessCidrs: 
+      - "0.0.0.0/0"
+    subnetIds:
+      - subnet-001f09490571be77b
+      - subnet-070c5ea45397e1f69
+      - subnet-00a96b1dc18abe63c
+    securityGroupIds:
+      - "sg-03ad29ec850fd34a6" #TODO -  libetar entre os SG´s do cluster a comunicação
+  accessConfig:
+    authenticationMode: API_AND_CONFIG_MAP
+    bootstrapClusterCreatorAdminPermissions: true
+
+  kubernetesNetworkConfig:
+    ipFamily: ipv4
+
+  enabledClusterLogTypes:
+    - "api"
+    - "audit"
+    - "authenticator"
+    - "controllerManager"
+    - "scheduler" 
+  tags:
+    key1: "value1"
+    key2: "value2"
+    key3: "value3"
+    key4: "value4"
+  certificateAuthority: "" # Será preenchido após a criação do cluster
+  endpoint: "" # Será preenchido após a criação do cluster
+
+
+###### Node Group
+nodeGroup:
+  name: ng01
+  nodeRoleArn: "arn:aws:iam::905418268696:role/control-plane-admin"
+  # iamInstanceProfileName: "seu-perfil-de-instancia-iam"
+  subnetIds:
+      - subnet-001f09490571be77b
+      - subnet-070c5ea45397e1f69
+      - subnet-00a96b1dc18abe63c
+  capacityType: "ON_DEMAND"
+  diskSize: 20
+  imageId: "ami-05bf2829e2bb97caa"
+  amiType: CUSTOM
+  instanceTypes:
+      - t3a.medium  
+  scalingConfig:
+    desiredSize: 1
+    maxSize: 5
+    minSize: 1
+  tags:
+    key1: "value1"
+    key2: "value2"
+    key3: "value3"
+    key4: "value4"
+
+################## Configmap - aws-auth
+awsAuth:
+  mapRoles:
+    - rolearn: arn:aws:iam::905418268696:role/AWSReservedSSO_AdministratorAccess_f11781e3a65d49ce  ## Colocar a role de acesso a console da AWS. Seguir o padrão
+      username: cluster-admin
+      groups:
+        - system:masters
+
+################
+clusterAuth:
+  secretName: eks-cluster-auth-gft
+  namespace: crossplane-system  
+
+################ Helm
+clusterAuthHelm:
+  secretNamehelm: eks-cluster-auth-helm
+  namespace: crossplane-system    
+
+
+################# ProviderConfig
+providerConfig:
+  name: irsa-providerconfig-gft
+  kubeconfigSecretName: eks-cluster-auth-gft  # Deve ser o mesmo nome do clusterauth-secretName
+  kubeconfigSecretKey: kubeconfig  
+
+################# ProviderConfig Helm
+providerConfigHelm:
+  namehelm: irsa-providerconfig-helm-gft
+  kubeconfigSecretNamehelm: eks-cluster-auth-helm # Deve ser o mesmo nome do clusterauthhelm-secretName
+  kubeconfigSecretKeyhelm: kubeconfig  
+
+# validar - kubectl.exe get providerconfig.helm.crossplane.io
+
+######################## Karpenter
+karpenter:
+  enabled: false  # Alterado para false por padrão
+  version: "v0.30.0"
+  namespace: karpenter
+  defaultInstanceProfile: "KarpenterNodeInstanceProfile-{{ .Values.cluster.name }}"
+  nodeTemplate:
+    subnetSelector:
+      karpenter.sh/discovery: "{{ .Values.cluster.name }}"
+    securityGroupSelector:
+      karpenter.sh/discovery: "{{ .Values.cluster.name }}"
+  limits:
+    resources:
+      cpu: 1000
+      memory: 1000Gi
+  consolidation:
+    enabled: true
+
+######################## MetricsServer
+metricsServer:
+  enabled: false
+  version: v0.6.3    
+
+######################## Kube-State-Metrics
+kubeStateMetrics:
+  enabled: false
+  version: "v2.9.2"
+  namespace: kube-system
+  replicas: 1  
+
+######################## Addons cluster EKS
+addons:
+  - name: vpc-cni
+    version: v1.18.0-eksbuild.1
+    resolveConflicts: OVERWRITE
+
+  - name: coredns
+    version: v1.11.1-eksbuild.11
+    resolveConflicts: OVERWRITE
+
+  - name: kube-proxy
+    version: v1.29.7-eksbuild.2
+    resolveConflicts: OVERWRITE
+
+  - name: aws-ebs-csi-driver
+    version: v1.33.0-eksbuild.1
+    resolveConflicts: OVERWRITE  

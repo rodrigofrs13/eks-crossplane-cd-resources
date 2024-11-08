@@ -1,0 +1,25 @@
+---
+# LaunchTemplate
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: LaunchTemplate
+metadata:
+  name: {{ .Values.nodeGroup.name }}-launch-template
+spec:
+  forProvider:
+    region: {{ .Values.global.region }}
+    name: {{ .Values.nodeGroup.name }}-launch-template
+    instanceType: {{ index .Values.nodeGroup.instanceTypes 0 }}
+    imageId: {{ .Values.nodeGroup.imageId }}
+    {{- if .Values.nodeGroup.diskSize }}
+    blockDeviceMappings:
+      - deviceName: /dev/xvda
+        ebs:
+          - volumeSize: {{ .Values.nodeGroup.diskSize }}
+            volumeType: gp3
+            encrypted: "true"
+    {{- end }}
+    tags:
+      Name: {{ .Values.nodeGroup.name }}-launch-template
+    userData: {{ include "eks.userdata" . | b64enc }}
+  providerConfigRef:
+    name: {{ $.Values.global.providerConfigRef }}

@@ -1,0 +1,13 @@
+apiVersion: eks.aws.upbound.io/v1beta1
+kind: ClusterAuth
+metadata:
+  name: {{ .Values.global.name }}-auth-helm
+spec:
+  forProvider:
+    region: {{ .Values.global.region | default "us-east-1" }}
+    clusterName: {{ .Values.global.name }}
+  writeConnectionSecretToRef:
+    namespace: {{ .Values.clusterAuthHelm.namespace }}
+    name: {{ .Values.clusterAuthHelm.secretNamehelm }}
+  providerConfigRef:
+    name: {{ .Values.global.providerConfigRef | default "irsa-providerconfig" }}    

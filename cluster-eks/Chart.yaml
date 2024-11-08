@@ -1,0 +1,5 @@
+apiVersion: v2
+name: eks-chart-crossplane
+description: v1 Helm chart for EKS cluster with Crossplane
+version: 1.0.0
+appVersion: "1.0.0"

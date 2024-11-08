@@ -1,0 +1,37 @@
+apiVersion: eks.aws.upbound.io/v1beta2
+kind: NodeGroup
+metadata:
+  name: {{ .Values.nodeGroup.name | default (printf "%s-ng" .Values.global.name) }}
+spec:
+  forProvider:
+    region: {{ .Values.global.region }}
+    clusterName: {{ .Values.global.name }}
+    nodeRoleArn: {{ .Values.nodeGroup.nodeRoleArn }}
+    subnetIds:
+      {{- range .Values.nodeGroup.subnetIds }}
+      - {{ . | quote }}
+      {{- end }}
+    {{- if .Values.nodeGroup.capacityType }}
+    capacityType: {{ .Values.nodeGroup.capacityType }}
+    {{- end }}
+    launchTemplate:
+      name: {{ .Values.nodeGroup.name }}-launch-template
+      version: "$Latest"  
+    scalingConfig:
+      desiredSize: {{ .Values.nodeGroup.scalingConfig.desiredSize }}
+      maxSize: {{ .Values.nodeGroup.scalingConfig.maxSize }}
+      minSize: {{ .Values.nodeGroup.scalingConfig.minSize }}
+    {{- if .Values.nodeGroup.tags }}
+    tags:
+      {{- toYaml .Values.nodeGroup.tags | nindent 6 }}
+    {{- end }}
+    {{- if .Values.nodeGroup.taints }}    
+    version: {{ .Values.global.version | quote }}
+    {{- end }}
+  providerConfigRef:
+    name: {{ $.Values.global.providerConfigRef }}
+  references:
+    - resourceRef:
+        apiVersion: ec2.aws.upbound.io/v1beta1
+        kind: LaunchTemplate
+        name: {{ .Values.nodeGroup.name }}-launch-template 

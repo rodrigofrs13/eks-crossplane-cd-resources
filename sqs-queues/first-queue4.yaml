@@ -1,0 +1,11 @@
+# apiVersion: sqs.aws.upbound.io/v1beta1
+# kind: Queue
+# metadata:
+#   name: first-queue4
+#   annotations:
+#     crossplane.io/external-name: https://sqs.us-east-1.amazonaws.com/246732148991/second-queue
+# spec:
+#   forProvider:
+#     region: us-east-1
+#   providerConfigRef:
+#     name: irsa-providerconfig
