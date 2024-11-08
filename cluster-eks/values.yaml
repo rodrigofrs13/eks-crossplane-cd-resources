@@ -205,5 +205,5 @@ addons:
   - name: eks-pod-identity-agent
     version: v1.3.2-eksbuild.2
     resolveConflicts: OVERWRITE   
-#    serviceAccountRoleArn: "arn:aws:iam::905418268696:role/control-plane-admin"   
+
 
