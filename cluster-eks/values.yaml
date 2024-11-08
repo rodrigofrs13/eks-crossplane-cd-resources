@@ -16,11 +16,11 @@ cluster:
     publicAccessCidrs: 
       - "0.0.0.0/0"
     subnetIds:
-      - subnet-001f09490571be77b
-      - subnet-070c5ea45397e1f69
-      - subnet-00a96b1dc18abe63c
+      - subnet-066c34e8f4ee1f017
+      - subnet-0327c7f77d76a0a84
+      - subnet-02e7acc56d139764e
     securityGroupIds:
-      - "sg-03ad29ec850fd34a6" #TODO -  libetar entre os SG´s do cluster a comunicação
+      - "sg-08e2e1dfbdfb6d29f" #TODO -  libetar entre os SG´s do cluster a comunicação
   accessConfig:
     authenticationMode: API_AND_CONFIG_MAP
     bootstrapClusterCreatorAdminPermissions: true
@@ -49,9 +49,9 @@ nodeGroup:
   nodeRoleArn: "arn:aws:iam::905418268696:role/control-plane-admin"
   # iamInstanceProfileName: "seu-perfil-de-instancia-iam"
   subnetIds:
-      - subnet-001f09490571be77b
-      - subnet-070c5ea45397e1f69
-      - subnet-00a96b1dc18abe63c
+      - subnet-066c34e8f4ee1f017
+      - subnet-0327c7f77d76a0a84
+      - subnet-02e7acc56d139764e
   capacityType: "ON_DEMAND"
   diskSize: 20
   imageId: "ami-05bf2829e2bb97caa"
