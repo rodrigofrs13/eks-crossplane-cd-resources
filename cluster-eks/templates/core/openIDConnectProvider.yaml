@@ -1,0 +1,16 @@
+{{- if .Values.openIDConnectProvider.enabled }}
+{{- $oidcUrl := (lookup "v1" "Secret" "crossplane-system" "eks-oidc-secret") }}
+
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: OpenIDConnectProvider
+metadata:
+  name: {{ .Values.global.name }}-oidc-provider
+spec:
+  forProvider:
+    region: {{ .Values.global.region | default "us-east-1" }}
+    url: {{ index $oidcUrl.data "endpoint" | b64dec }}
+    clientIdList: {{ .Values.openIDConnectProvider.clientIdList }}  # Note a mudança aqui
+    thumbprintList: {{ .Values.openIDConnectProvider.thumbprintList }}
+  providerConfigRef:
+    name: {{ .Values.global.providerConfigRef }}
+{{- end }}

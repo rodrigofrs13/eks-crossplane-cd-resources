@@ -1,0 +1,39 @@
+apiVersion: autoscaling.aws.upbound.io/v1beta2
+kind: AutoscalingGroup
+metadata:
+  name: {{ .Values.global.name }}-asg
+  labels:
+    eks-cluster: {{ .Values.global.name }}
+    nodegroup: {{ .Values.global.name }}-ng
+spec:
+  forProvider:
+    region: {{ .Values.global.region }}
+    # availabilityZones:
+    #   {{- range .Values.nodeGroup.availabilityZones }}
+    #   - {{ . }}
+    #   {{- end }}
+    desiredCapacity: {{ .Values.nodeGroup.scalingConfig.desiredSize }}
+    maxSize: {{ .Values.nodeGroup.scalingConfig.maxSize }}
+    minSize: {{ .Values.nodeGroup.scalingConfig.minSize }}
+    vpcZoneIdentifier:
+      {{- range $.Values.vpc.subnetIds }}
+      - {{ . }}
+      {{- end }}
+    launchTemplate:
+      - name: {{ $.Values.global.name }}-launch-template
+        version: "$Latest"
+    tags:
+      - key: eks-cluster
+        propagateAtLaunch: true
+        value: {{ .Values.global.name }}
+      - key: nodegroup
+        propagateAtLaunch: true
+        value: {{ .Values.nodeGroup.name }}
+  references:
+    - name: lt
+      resource:
+        apiVersion: ec2.aws.upbound.io/v1beta1
+        kind: LaunchTemplate
+        name: {{ $.Values.nodeGroup.name }}-launch-template        
+  providerConfigRef:
+    name: {{ $.Values.global.providerConfigRef }}

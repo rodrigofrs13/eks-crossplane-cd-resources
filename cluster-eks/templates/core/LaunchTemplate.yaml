@@ -3,11 +3,12 @@
 apiVersion: ec2.aws.upbound.io/v1beta1
 kind: LaunchTemplate
 metadata:
-  name: {{ .Values.nodeGroup.name }}-launch-template
+  name: {{ .Values.global.name }}-launch-template
 spec:
   forProvider:
     region: {{ .Values.global.region }}
-    name: {{ .Values.nodeGroup.name }}-launch-template
+    name: {{ .Values.global.name }}-launch-template
+    defaultVersion: {{ .Values.launchTemplate.version }}
     instanceType: {{ index .Values.nodeGroup.instanceTypes 0 }}
     imageId: {{ .Values.nodeGroup.imageId }}
     {{- if .Values.nodeGroup.diskSize }}
@@ -19,7 +20,15 @@ spec:
             encrypted: "true"
     {{- end }}
     tags:
-      Name: {{ .Values.nodeGroup.name }}-launch-template
+      Name: {{ .Values.global.name }}-launch-template
+    tagSpecifications:
+      - resourceType: instance
+        tags:
+          Name: {{ .Values.global.name }}-ng
+          eks:nodegroup-name: {{ .Values.global.name }}-ng
+          {{- range $key, $value := .Values.nodeGroup.instanceTags }}
+          {{ $key }}: {{ $value | quote }}
+          {{- end }}      
     userData: {{ include "eks.userdata" . | b64enc }}
   providerConfigRef:
     name: {{ $.Values.global.providerConfigRef }}

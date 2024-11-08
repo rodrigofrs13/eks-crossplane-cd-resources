@@ -1,0 +1,18 @@
+## https://aws.amazon.com/blogs/containers/amazon-eks-pod-identity-a-new-way-for-applications-on-eks-to-obtain-iam-credentials/
+## https://docs.aws.amazon.com/pt_br/eks/latest/userguide/pod-identities.html
+
+{{- if .Values.podIdentityAssociation.enabled }}
+apiVersion: eks.aws.upbound.io/v1beta1  # Atualizado para v1beta1
+kind: PodIdentityAssociation
+metadata:
+  name: {{ .Values.global.name }}-pod-identity
+spec:
+  forProvider:
+    clusterName: {{ .Values.global.name }}
+    namespace: {{ .Values.podIdentityAssociation.namespace }}
+    serviceAccount: {{ .Values.podIdentityAssociation.serviceAccount }}
+    region: {{ .Values.global.region | default "us-east-1" }}
+    roleArn: {{ .Values.podIdentityAssociation.roleArn }}
+  providerConfigRef:
+    name: {{ .Values.global.providerConfigRef }}
+{{- end }}

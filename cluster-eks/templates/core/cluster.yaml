@@ -3,9 +3,8 @@ apiVersion: eks.aws.upbound.io/v1beta1
 kind: Cluster
 metadata:
   name: {{ .Values.global.name }}
-  labels:
-    testing.upbound.io/cluster: {{ .Values.global.name }}
-  
+  annotations:
+    crossplane.io/external-name: {{ .Values.global.name }}  
 
 spec:
   providerConfigRef:
@@ -13,7 +12,6 @@ spec:
 
   forProvider:
     bootstrapSelfManagedAddons: true  
-    
     region: {{ .Values.global.region | default "us-east-1" }}
     version: {{ .Values.global.version | quote }}
     roleArn: {{ .Values.cluster.roleArn }}
@@ -22,15 +20,15 @@ spec:
             bootstrapClusterCreatorAdminPermissions: {{ .Values.cluster.accessConfig.bootstrapClusterCreatorAdminPermissions }}    
     vpcConfig:     
       - subnetIds:
-          {{- range .Values.cluster.vpcConfig.subnetIds }}
-          - {{ . | quote }}
-          {{- end }}
-        {{- if .Values.cluster.vpcConfig.securityGroupIds }}
-        securityGroupIds:
-          {{- range .Values.cluster.vpcConfig.securityGroupIds }}
-          - {{ . | quote }}
-          {{- end }}
+        {{- range .Values.vpc.subnetIds }}
+        - {{ . | quote }}
         {{- end }}
+        securityGroupIds:
+          - {{ .Values.vpc.securityGroupIds }}       
+
+        # securityGroupIdSelector:
+        #   matchLabels:
+        #     ekscrossplane.io/sg-name: {{ .Values.global.name }}-sg-1
         publicAccessCidrs:
             {{- range .Values.cluster.vpcConfig.publicAccessCidrs }}
             - {{ . | quote }}
@@ -52,6 +50,9 @@ spec:
     tags:
       {{- toYaml .Values.cluster.tags | nindent 6 }}
     {{- end }}
+  # writeConnectionSecretToRef:
+  #   name: {{ .Values.global.name }}eks-oidc-secret
+  #   namespace: crossplane-system    
 
 {{- end }}
 

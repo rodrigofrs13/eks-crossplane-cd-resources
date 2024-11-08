@@ -1,0 +1,59 @@
+# apiVersion: kms.aws.upbound.io/v1beta1
+# kind: Key
+# metadata:
+#   name: {{ .Values.global.name }}-kms-key
+# #   labels:
+# #     crossplane-name: {{ .Values.global.name }}-kms-key
+# spec:
+#   forProvider:
+#     region: {{ .Values.global.region }}
+#     description: "KMS key for EKS cluster {{ .Values.global.name }}"
+#     enableKeyRotation: true
+#     policy: |
+#       {
+#         "Version": "2012-10-17",
+#         "Statement": [
+#           {
+#             "Sid": "Enable IAM User Permissions",
+#             "Effect": "Allow",
+#             "Principal": {
+#               "AWS": "arn:aws:iam::{{ .Values.aws.accountId }}:root"
+#             },
+#             "Action": "kms:*",
+#             "Resource": "*"
+#           },
+#           {
+#             "Sid": "Allow use of the key",
+#             "Effect": "Allow",
+#             "Principal": {
+#               "AWS": "{{ .Values.cluster.roleArn }}"
+#             },
+#             "Action": [
+#               "kms:Encrypt",
+#               "kms:Decrypt",
+#               "kms:ReEncrypt*",
+#               "kms:GenerateDataKey*",
+#               "kms:DescribeKey"
+#             ],
+#             "Resource": "*"
+#           }
+#         ]
+#       }
+#   writeConnectionSecretToRef:  # Configuração para armazenar o ARN em um Secret
+#     name: eks-kms-key-secret    # Nome do Secret que será criado 
+#     namespace: crossplane-system
+#   providerConfigRef:
+#     name: {{ .Values.global.providerConfigRef | default "irsa-providerconfig" }}
+# # ---
+# # apiVersion: kms.aws.upbound.io/v1beta1
+# # kind: Alias
+# # metadata:
+# #     name: {{ .Values.global.name }}-kms-alias
+# # spec:
+# #     deletionPolicy: Delete
+# #     forProvider:
+# #         region: {{ .Values.global.region }}
+# #         targetKeyIdRef:
+# #             name: {{ .Values.global.name }}-kms-key
+# #     providerConfigRef:
+# #         name: {{ .Values.global.providerConfigRef | default "irsa-providerconfig" }}

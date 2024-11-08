@@ -1,0 +1,40 @@
+{{- if and .Values.nodeGroup .Values.nodeGroup.schedule (hasKey .Values.nodeGroup.schedule "enabled") .Values.nodeGroup.schedule.enabled }}
+{{- range $index, $schedule := .Values.nodeGroup.schedule.scheduledActions }}
+---
+apiVersion: autoscaling.aws.upbound.io/v1beta1
+kind: Schedule
+metadata:
+  name: {{ .Values.global.name }}-{{ $schedule.name }}
+spec:
+  forProvider:
+    region: {{ $.Values.global.region }}
+    autoscalingGroupName: {{ $.Values.global.name }}-asg
+    #scheduledActionName: {{ $schedule.name }}
+    # {{- if $schedule.startTime }}
+    # startTime: {{ $schedule.startTime | quote }}
+    # {{- end }}
+    # {{- if $schedule.endTime }}
+    # endTime: {{ $schedule.endTime | quote }}
+    # {{- end }}
+    {{- if $schedule.recurrence }}
+    recurrence: {{ $schedule.recurrence | quote }}
+    {{- end }}
+    {{- if hasKey $schedule "minSize" }}
+    minSize: {{ $schedule.minSize }}
+    {{- end }}
+    {{- if hasKey $schedule "maxSize" }}
+    maxSize: {{ $schedule.maxSize }}
+    {{- end }}
+    {{- if hasKey $schedule "desiredCapacity" }}
+    desiredCapacity: {{ $schedule.desiredCapacity }}
+    {{- end }}
+  providerConfigRef:
+    name: {{ $.Values.global.providerConfigRef | default "irsa-providerconfig" }}
+  references:
+    - name: asg
+      resource:
+        apiVersion: autoscaling.aws.upbound.io/v1beta2
+        kind: AutoscalingGroup
+        name: {{ $.Values.global.name }}-asg
+{{- end }}
+{{- end }}

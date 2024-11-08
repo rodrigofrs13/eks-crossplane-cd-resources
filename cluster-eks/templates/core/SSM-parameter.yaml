@@ -1,0 +1,28 @@
+# apiVersion: ssm.aws.upbound.io/v1beta1
+# kind: Parameter
+# metadata:
+#   name: {{ .Values.global.name }}-kms-key-arn
+# spec:
+#   forProvider:
+#     region: {{ .Values.global.region }}
+#     name: "/eks/{{ .Values.global.name }}/kms-key-arn"
+#     type: String
+#     value: ${kms-key.arn}
+#   providerConfigRef:
+#     name: {{ .Values.global.providerConfigRef | default "irsa-providerconfig" }}
+#   references:
+#     - name: kms-key
+#       resource:
+#         apiVersion: kms.aws.upbound.io/v1beta1
+#         kind: Key
+#         name: {{ .Values.global.name }}-kms-key
+# apiVersion: v1
+# kind: Secret
+# metadata:
+#   name: kms-key-secret
+#   namespace: crossplane-system
+#   labels:
+#     purpose: kms
+# type: Opaque
+# data:
+#   arn: <base64-encoded-kms-key-arn>  

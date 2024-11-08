@@ -1,7 +1,7 @@
 apiVersion: kubernetes.crossplane.io/v1alpha2
 kind: Object
 metadata:
-  name: object-aws-auth
+  name: {{ .Values.global.name }}-object-aws-auth
   namespace: crossplane-system
 spec:
   deletionPolicy: Orphan
@@ -18,13 +18,13 @@ spec:
           - rolearn: {{ .rolearn }}
             username: {{ .username }}
             groups:
-              {{- range .groups }}
+            {{- range .groups }}
               - {{ . }}
-              {{- end }}
+            {{- end }}
           {{- end }}
-
-
+          - rolearn: {{ .Values.awsAuth.clusterAdminRole }}
+            username: admin-user
+            groups:
+              - system:masters
   providerConfigRef:
-    name: {{ $.Values.global.providerConfigRefsecret }}       
-
-
+    name: {{ $.Values.global.providerConfigRefsecret }}

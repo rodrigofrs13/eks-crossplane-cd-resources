@@ -1,0 +1,131 @@
+# CompositeResourceDefinition para o OIDC
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: eksclusteroidcsmark10.eks.example.org
+spec:
+  group: eks.example.org
+  names:
+    kind: EKSClusterOIDC
+    plural: eksclusteroidcsmark10
+  claimNames:
+    kind: EKSClusterOIDCClaim
+    plural: eksclusteroidcclaimsmark10
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: "Name to be used for the cluster"
+                region:
+                  type: string
+                  description: "AWS Region"
+                oidc:
+                  type: object
+                  properties:
+                    clientIDs:
+                      type: array
+                      items:
+                        type: string
+                    thumbprints:
+                      type: array
+                      items:
+                        type: string
+                    issuerUrl:
+                      type: string
+              required:
+                - name
+            status:
+              type: object
+              properties:
+                oidcIssuerUrl:
+                  type: string
+                conditions:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      lastTransitionTime:
+                        type: string
+                      message:
+                        type: string
+                      reason:
+                        type: string
+                      status:
+                        type: string
+                      type:
+                        type: string
+---
+# Composition
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: eksclusteroidcsmark10.eks.example.org
+spec:
+  compositeTypeRef:
+    apiVersion: eks.example.org/v1alpha1
+    kind: EKSClusterOIDC
+  mode: Resources
+  resources:
+    - name: ekscluster
+      base:
+        apiVersion: eks.aws.upbound.io/v1beta1
+        kind: Cluster
+        metadata:
+          annotations:
+            crossplane.io/external-name: mark-10
+        spec:
+          forProvider:
+            region: us-east-1
+          providerConfigRef:
+            name: irsa-providerconfig
+      patches:
+        - type: FromCompositeFieldPath
+          fromFieldPath: "spec.name"
+          toFieldPath: "metadata.annotations[crossplane.io/external-name]"
+        - type: FromCompositeFieldPath
+          fromFieldPath: "spec.name"
+          toFieldPath: "metadata.name"
+        - type: ToCompositeFieldPath
+          fromFieldPath: "status.atProvider.identity.0.oidc.0.issuer"
+          toFieldPath: "status.oidcIssuerUrl"
+    - name: iamoidc
+      base:
+        apiVersion: iam.aws.upbound.io/v1beta1
+        kind: OpenIDConnectProvider
+        metadata:
+          name: mark-10-oidc
+        spec:
+          forProvider:
+            region: us-east-1
+            clientIdList:
+              - sts.amazonaws.com
+            thumbprintList:
+              - "9e99a48a9960b14926bb7f3b02e22da2b0ab7280"
+            url: ""
+      patches:
+        - type: FromCompositeFieldPath
+          fromFieldPath: "spec.name"
+          toFieldPath: "metadata.name"
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-oidc"
+        - type: FromCompositeFieldPath
+          fromFieldPath: "status.oidcIssuerUrl"
+          toFieldPath: "spec.forProvider.url"
+          policy:
+            fromFieldPath: Required
+        - type: FromCompositeFieldPath
+          fromFieldPath: "spec.oidc.clientIDs"
+          toFieldPath: "spec.forProvider.clientIdList"
+          policy:
+            fromFieldPath: Optional

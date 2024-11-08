@@ -1,10 +1,44 @@
 global:
   region: us-east-1
   version: "1.29"
-  name: crossplane-cluster
+  name: mark-1
   providerConfigRef: "irsa-providerconfig"
-  providerConfigRefsecret: "irsa-providerconfig-gft" # mesmo do providerconfig.name 
+  providerConfigRefsecret: "irsa-providerconfig-gft-10" # mesmo do providerconfig.name 
 
+aws:
+  accountId: "905418268696" 
+
+openIDConnectProvider:
+  enabled: false
+  clientIdList:  # Note a mudança aqui de 'ID' para 'Id'
+    - sts.amazonaws.com
+  thumbprintList:
+    - 9e99a48a9960b14926bb7f3b02e22da2b0ab7280 
+
+podIdentityAssociation:
+  enabled: true
+  namespace: default
+  serviceAccount: default
+  roleArn: arn:aws:iam::905418268696:role/control-plane-admin #arn:aws:iam::905418268696:role/podidentigy  #  
+
+#### Redes
+
+vpc:
+  id: "vpc-0fe368fcf9395988e"
+  name: eksctl-controlplane-cluster/VPC
+  tags:
+    Name: eksctl-controlplane-cluster/VPC
+  securityGroupIds: "sg-0e6c109978f5c71ad" #TODO -  libetar entre os SG´s do cluster a comunicação    
+
+  subnetIds:
+    - subnet-0679369740285390a
+    - subnet-03d9f2960ff158907
+    - subnet-0e11fd689c26a16d8
+
+subnetSelector:
+  tags:
+    eksctl.cluster.k8s.io/v1alpha1/cluster-name: "controlplane"
+    Name: "eksctl-controlplane-cluster/SubnetPublicUSEAST" 
 
 #### Cluster
 
@@ -15,12 +49,9 @@ cluster:
     endpointPublicAccess: true
     publicAccessCidrs: 
       - "0.0.0.0/0"
-    subnetIds:
-      - subnet-066c34e8f4ee1f017
-      - subnet-0327c7f77d76a0a84
-      - subnet-02e7acc56d139764e
-    securityGroupIds:
-      - "sg-08e2e1dfbdfb6d29f" #TODO -  libetar entre os SG´s do cluster a comunicação
+
+
+
   accessConfig:
     authenticationMode: API_AND_CONFIG_MAP
     bootstrapClusterCreatorAdminPermissions: true
@@ -39,34 +70,56 @@ cluster:
     key2: "value2"
     key3: "value3"
     key4: "value4"
+    key5: "value5"
   certificateAuthority: "" # Será preenchido após a criação do cluster
   endpoint: "" # Será preenchido após a criação do cluster
 
+###### LaunchTemplate
+launchTemplate:
+  version: 2  # Incremente este número manualmente a cada atualização do LaunchTemplate
 
 ###### Node Group
 nodeGroup:
-  name: ng01
+  #name: ng09
   nodeRoleArn: "arn:aws:iam::905418268696:role/control-plane-admin"
   # iamInstanceProfileName: "seu-perfil-de-instancia-iam"
-  subnetIds:
-      - subnet-066c34e8f4ee1f017
-      - subnet-0327c7f77d76a0a84
-      - subnet-02e7acc56d139764e
   capacityType: "ON_DEMAND"
   diskSize: 20
   imageId: "ami-05bf2829e2bb97caa"
   amiType: CUSTOM
   instanceTypes:
-      - t3a.medium  
+      #- t3a.medium
+      - t3a.large
   scalingConfig:
-    desiredSize: 1
+    desiredSize: 3
     maxSize: 5
-    minSize: 1
+    minSize: 3
   tags:
     key1: "value1"
     key2: "value2"
     key3: "value3"
     key4: "value4"
+  schedule:
+    enabled: false
+    scheduledActions:
+      - name: scale-up-morning3
+        # startTime: "2023-06-01T08:00:00Z"
+        # endTime: "2024-06-01T08:00:00Z"
+        recurrence: "0 9 * * MON-FRI"
+        minSize: 1
+        maxSize: 2
+        desiredCapacity: 2
+      - name: scale-down-evening3
+        # startTime: "2023-06-01T18:00:00Z"
+        # endTime: "2024-06-01T18:00:00Z"
+        recurrence: "0 19 * * MON-FRI"
+        minSize: 0
+        maxSize: 0
+        desiredCapacity: 0
+  instanceTags:
+    Environment: "Production"
+    Project: "MyApp"
+    Department: "Engineering"      
 
 ################## Configmap - aws-auth
 awsAuth:
@@ -89,13 +142,13 @@ clusterAuthHelm:
 
 ################# ProviderConfig
 providerConfig:
-  name: irsa-providerconfig-gft
+  name: irsa-providerconfig-gft-10
   kubeconfigSecretName: eks-cluster-auth-gft  # Deve ser o mesmo nome do clusterauth-secretName
   kubeconfigSecretKey: kubeconfig  
 
 ################# ProviderConfig Helm
 providerConfigHelm:
-  namehelm: irsa-providerconfig-helm-gft
+  namehelm: irsa-providerconfig-helm-gft-10
   kubeconfigSecretNamehelm: eks-cluster-auth-helm # Deve ser o mesmo nome do clusterauthhelm-secretName
   kubeconfigSecretKeyhelm: kubeconfig  
 
@@ -148,3 +201,9 @@ addons:
   - name: aws-ebs-csi-driver
     version: v1.33.0-eksbuild.1
     resolveConflicts: OVERWRITE  
+
+  - name: eks-pod-identity-agent
+    version: v1.3.2-eksbuild.2
+    resolveConflicts: OVERWRITE   
+#    serviceAccountRoleArn: "arn:aws:iam::905418268696:role/control-plane-admin"   
+
