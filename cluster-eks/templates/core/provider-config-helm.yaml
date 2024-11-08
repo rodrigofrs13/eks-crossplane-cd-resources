@@ -1,4 +1,4 @@
-apiVersion: helm.crossplane.io/v1beta1
+apiVersion: helm.crossplane.io/v1alpha1
 kind: ProviderConfig
 metadata:
   name: {{ .Values.providerConfigHelm.namehelm }}
@@ -9,9 +9,4 @@ spec:
       namespace: crossplane-system
       name: {{ .Values.providerConfigHelm.kubeconfigSecretNamehelm }}
       key: {{ .Values.providerConfigHelm.kubeconfigSecretKeyhelm }}
----
-apiVersion: kubernetes.crossplane.io/v1alpha1
-kind: ProviderConfig
-metadata:
-  name: irsa-providerconfig-gft-10
-  namespace: crossplane-system      
+ 
