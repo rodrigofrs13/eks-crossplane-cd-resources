@@ -19,7 +19,7 @@ podIdentityAssociation:
   enabled: false
   namespace: default
   serviceAccount: default
-  roleArn: arn:aws:iam::905418268696:role/control-plane-admin #arn:aws:iam::905418268696:role/podidentigy  #  
+  roleArn: arn:aws:iam::246732148991:role/control-plane-admin #arn:aws:iam::905418268696:role/podidentigy  #  
 
 #### Redes
 
@@ -43,7 +43,7 @@ subnetSelector:
 #### Cluster
 
 cluster: 
-  roleArn: "arn:aws:iam::905418268696:role/control-plane-admin"
+  roleArn: "arn:aws:iam::246732148991:role/control-plane-admin"
   vpcConfig:
     endpointPrivateAccess: true
     endpointPublicAccess: true
@@ -81,7 +81,7 @@ launchTemplate:
 ###### Node Group
 nodeGroup:
   #name: ng09
-  nodeRoleArn: "arn:aws:iam::905418268696:role/control-plane-admin"
+  nodeRoleArn: "arn:aws:iam::246732148991:role/control-plane-admin"
   # iamInstanceProfileName: "seu-perfil-de-instancia-iam"
   capacityType: "ON_DEMAND"
   diskSize: 20
@@ -91,9 +91,9 @@ nodeGroup:
       #- t3a.medium
       - t3a.large
   scalingConfig:
-    desiredSize: 3
+    desiredSize: 1
     maxSize: 5
-    minSize: 3
+    minSize: 1
   tags:
     key1: "value1"
     key2: "value2"
