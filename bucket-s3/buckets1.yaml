@@ -2,7 +2,7 @@ apiVersion: s3.aws.upbound.io/v1beta1
 kind: Bucket
 metadata:
   annotations:
-  name: bucket-cd-argo-1
+  name: crossplane-bucket-cd-argo-1
 spec:
   forProvider:
     region: us-east-1
@@ -13,9 +13,11 @@ apiVersion: s3.aws.upbound.io/v1beta1
 kind: Bucket
 metadata:
   annotations:
-  name: bucket-cd-argo-2
+  name: crossplane-bucket-cd-argo-2
 spec:
   forProvider:
     region: us-east-1
   providerConfigRef:
     name: irsa-providerconfig
+
+# git add . && git commit -m "$(date)" && git push    
