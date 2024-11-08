@@ -28,12 +28,12 @@ vpc:
   name: eksctl-controlplane-cluster/VPC
   tags:
     Name: eksctl-controlplane-cluster/VPC
-  securityGroupIds: "sg-0e6c109978f5c71ad" #TODO -  libetar entre os SG´s do cluster a comunicação    
+  securityGroupIds: "sg-0f4e18a0a5038e4e9" #TODO -  libetar entre os SG´s do cluster a comunicação    
 
   subnetIds:
-    - subnet-0679369740285390a
-    - subnet-03d9f2960ff158907
-    - subnet-0e11fd689c26a16d8
+    - subnet-066c34e8f4ee1f017
+    - subnet-0327c7f77d76a0a84
+    - subnet-02e7acc56d139764e
 
 subnetSelector:
   tags:
