@@ -19,5 +19,16 @@ spec:
     region: us-east-1
   providerConfigRef:
     name: irsa-providerconfig
+---
+apiVersion: s3.aws.upbound.io/v1beta1
+kind: Bucket
+metadata:
+  annotations:
+  name: crossplane-bucket-cd-argo-4
+spec:
+  forProvider:
+    region: us-east-1
+  providerConfigRef:
+    name: irsa-providerconfig    
 
 # git add . && git commit -m "$(date)" && git push    
