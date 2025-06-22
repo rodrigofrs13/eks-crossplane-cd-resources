@@ -1,7 +1,7 @@
 global:
   region: us-east-1
   version: "1.33"
-  name: mark-1
+  name: mark-10
   providerConfigRef: "irsa-providerconfig"
   providerConfigRefsecret: "irsa-providerconfig-gft-10" # mesmo do providerconfig.name 
 
