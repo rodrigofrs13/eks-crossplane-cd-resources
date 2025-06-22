@@ -19,7 +19,7 @@ podIdentityAssociation:
   enabled: false
   namespace: default
   serviceAccount: default
-  roleArn: arn:aws:iam::246732148991:role/control-plane-admin #arn:aws:iam::905418268696:role/podidentigy  #  
+  roleArn: arn:aws:iam::246732148991:role/control-plane-admin #arn:aws:iam::905418268696:role/podidentigy  
 
 #### Redes
 
