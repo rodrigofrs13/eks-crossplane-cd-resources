@@ -24,16 +24,16 @@ podIdentityAssociation:
 #### Redes
 
 vpc:
-  id: "vpc-0fe368fcf9395988e"  #vpc-0a329d0810a68b4f7
+  id: vpc-0a329d0810a68b4f7
   name: eksctl-controlplane-cluster/VPC
   tags:
     Name: eksctl-controlplane-cluster/VPC
   securityGroupIds: "sg-0f4e18a0a5038e4e9" #TODO -  liberar entre os SG´s do cluster a comunicação    
 
   subnetIds:
-    - subnet-066c34e8f4ee1f017  #subnet-098339c358cd6ca2a
-    - subnet-0327c7f77d76a0a84  #subnet-09ebf6ffbfa7bbd38
-    - subnet-02e7acc56d139764e  #subnet-0e7a81178dd23cc8d
+    - subnet-098339c358cd6ca2a
+    - subnet-09ebf6ffbfa7bbd38
+    - subnet-0e7a81178dd23cc8d
 
 subnetSelector:
   tags:
