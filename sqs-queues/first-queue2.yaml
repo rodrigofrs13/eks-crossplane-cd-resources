@@ -22,4 +22,4 @@ spec:
     region: us-east-1
     name: crossplane-queue-cd-argo-21
   providerConfigRef:
-    name: irsa-providerconfiga
+    name: irsa-providerconfig
