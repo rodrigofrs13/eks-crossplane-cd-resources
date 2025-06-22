@@ -28,7 +28,7 @@ vpc:
   name: eksctl-controlplane-cluster/VPC
   tags:
     Name: eksctl-controlplane-cluster/VPC
-  securityGroupIds: "sg-0f4e18a0a5038e4e9" #TODO -  liberar entre os SG´s do cluster a comunicação    
+  securityGroupIds: "sg-0db9bf198fffadfd5" #TODO -  liberar entre os SG´s do cluster a comunicação    
 
   subnetIds:
     - subnet-098339c358cd6ca2a
