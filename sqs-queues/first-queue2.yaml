@@ -1,11 +1,11 @@
-apiVersion: sqs.aws.upbound.io/v1beta1
-kind: Queue
-metadata:
-  name: crossplane-queue-cd-argo-2
-spec:
-  forProvider:
-    name: crossplane-queue-cd-argo-2
-    region: us-east-1
-  providerConfigRef:
-    name: irsa-providerconfig
+# apiVersion: sqs.aws.upbound.io/v1beta1
+# kind: Queue
+# metadata:
+#   name: crossplane-queue-cd-argo-2
+# spec:
+#   forProvider:
+#     name: crossplane-queue-cd-argo-2
+#     region: us-east-1
+#   providerConfigRef:
+#     name: irsa-providerconfig
 
