@@ -18,6 +18,6 @@
 #     region: us-east-1
 #     runtime: python3.8
 #     timeout: 60
-#     role: arn:aws:iam::xxx:role/service-role/teste-role-itxmvmtq  #Obrigatório ter a role já criada.
+#     role: arn:aws:iam::246732148991:role/service-role/teste-role-itxmvmtq  #Obrigatório ter a role já criada.
 #   providerConfigRef:
 #     name: irsa-providerconfig    

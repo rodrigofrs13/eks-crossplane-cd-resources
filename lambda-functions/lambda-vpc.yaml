@@ -18,7 +18,7 @@
 #     region: us-east-1
 #     runtime: python3.8
 #     timeout: 60
-#     role: arn:aws:iam::xxx:role/service-role/teste-role-itxmvmtq  # Substitua com o ARN do papel IAM apropriado #Tem que ter permissão na VPC, Obrigatório ter a role já criada.
+#     role: arn:aws:iam::246732148991:role/service-role/teste-role-itxmvmtq  # Substitua com o ARN do papel IAM apropriado #Tem que ter permissão na VPC, Obrigatório ter a role já criada.
 #     vpcConfig:
 #       - securityGroupIdSelector:
 #           matchLabels:
