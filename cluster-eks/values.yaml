@@ -51,7 +51,6 @@ cluster:
       - "0.0.0.0/0"
 
 
-
   accessConfig:
     authenticationMode: API_AND_CONFIG_MAP
     bootstrapClusterCreatorAdminPermissions: true
