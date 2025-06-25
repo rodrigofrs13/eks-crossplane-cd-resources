@@ -43,12 +43,13 @@ subnetSelector:
 #### Cluster
 
 cluster: 
-  roleArn: "arn:aws:iam::246732148991:role/control-plane-admin"
+  roleArn: "arn:aws:iam::xxx:role/control-plane-admin"
   vpcConfig:
     endpointPrivateAccess: true
     endpointPublicAccess: true
     publicAccessCidrs: 
       - "0.0.0.0/0"
+
 
 
   accessConfig:
@@ -80,7 +81,7 @@ launchTemplate:
 ###### Node Group
 nodeGroup:
   #name: ng09
-  nodeRoleArn: "arn:aws:iam::246732148991:role/control-plane-admin"
+  nodeRoleArn: "arn:aws:iam::xxx:role/control-plane-admin"
   # iamInstanceProfileName: "seu-perfil-de-instancia-iam"
   capacityType: "ON_DEMAND"
   diskSize: 20
